@@ -1,0 +1,61 @@
+# Day 1: https://adventofcode.com/2019/day/1
+
+function fuel_requirements(mass)
+    # To find the fuel required for a module, take its mass, divide by three,
+    # round down, and subtract 2.
+
+    return floor(mass / 3) - 2
+end
+
+function get_total_fuel(masses)
+    total_fuel = 0
+    for m in masses
+        global total_fuel = total_fuel + fuel_requirements(m)
+    end
+
+    return total_fuel
+end
+
+@test 2 == fuel_requirements(12)
+@test 2 == fuel_requirements(14)
+@test 654 == fuel_requirements(1969)
+@test 33583 == fuel_requirements(100756)
+# If it reaches here, all tests have passed.
+println("All tests passed")
+
+# Read in the mass
+masses = open("Day1_module_mass.txt") do file
+    lines = readlines(file)
+    map(x->parse(Float64,x),lines)
+end
+fuel = get_total_fuel(masses)
+
+println("The total fuel requirements are: $fuel")
+
+
+# Part 2: https://adventofcode.com/2019/day/1#part2
+function get_new_masses(masses)
+    terminated = false
+    while !terminated
+        new_masses = []
+        for m in masses
+            fuel_requirement = fuel_requirements(m)
+            if fuel_requirements(fuel_requirement) <= 0
+                terminated = true
+                break
+
+            push!(new_masses, m + fuel_requirement)
+        end
+
+        masses = new_masses
+    end
+
+    return new_masses
+end
+
+@test 2 == get_total_fuel(get_new_masses([14]))
+@test 966 == get_total_fuel(get_new_masses([1969]))
+@test 50346 == get_total_fuel(get_new_masses([100756]))
+
+fuel_new = get_total_fuel(new_masses)
+println("The new total fuel requirements are: $fuel_new")
