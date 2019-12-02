@@ -1,4 +1,8 @@
 # Day 1: https://adventofcode.com/2019/day/1
+using Test
+
+cd("C:\\Users\\ricob\\Documents\\Data\\Sync\\Richard\\Projects\\adventofcode\\Day1")
+ENV["JULIA_DEBUG"]="all"
 
 function fuel_requirements(mass)
     # To find the fuel required for a module, take its mass, divide by three,
@@ -10,7 +14,7 @@ end
 function get_total_fuel(masses)
     total_fuel = 0
     for m in masses
-        global total_fuel = total_fuel + fuel_requirements(m)
+        total_fuel += fuel_requirements(m)
     end
 
     return total_fuel
@@ -34,28 +38,33 @@ println("The total fuel requirements are: $fuel")
 
 
 # Part 2: https://adventofcode.com/2019/day/1#part2
-function get_new_masses(masses)
+function get_new_fuel(masses)
     terminated = false
+    final_fuel = 0
     while !terminated
         new_masses = []
         for m in masses
+            println("$m")
             fuel_requirement = fuel_requirements(m)
             if fuel_requirements(fuel_requirement) <= 0
-                terminated = true
+                final_fuel += fuel_requirement
                 break
-
-            push!(new_masses, m + fuel_requirement)
+            else
+                push!(new_masses, m + fuel_requirement)
+            end
         end
-
+        if length(new_masses) == 0
+            terminated = true
+        end
         masses = new_masses
     end
 
-    return new_masses
+    return final_fuel
 end
 
-@test 2 == get_total_fuel(get_new_masses([14]))
-@test 966 == get_total_fuel(get_new_masses([1969]))
-@test 50346 == get_total_fuel(get_new_masses([100756]))
+@test 2 == get_new_fuel([14])
+@test 966 == get_new_fuel([1969])
+@test 50346 == get_new_fuel([100756])
 
 fuel_new = get_total_fuel(new_masses)
 println("The new total fuel requirements are: $fuel_new")
